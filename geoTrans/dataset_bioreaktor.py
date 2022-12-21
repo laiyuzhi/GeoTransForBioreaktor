@@ -62,17 +62,17 @@ class Bioreaktor_Detection(Dataset):
 
         # traindata
         if mode == 'train':
-            self.images = self.images_train[:cfg.NUM_TRANS*len(self.images_train)]
-            self.labels = self.labels_train[:cfg.NUM_TRANS*len(self.images_train)]
+            self.images = self.images_train[:cfg.NUM_TRANS * len(self.images_train)]
+            self.labels = self.labels_train[:cfg.NUM_TRANS * len(self.images_train)]
         # testdata anormal
         if mode == 'test':
             # a = self.images_c[10000:10100]
-            self.images = self.images_testanormal[:cfg.NUM_TRANS*30]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS*30]
+            self.images = self.images_testanormal[:cfg.NUM_TRANS * 600]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 600]
         ## vali data normal nicht trainiert
         if mode == 'vali':
-            self.images = self.images_testnormal[:cfg.NUM_TRANS*30]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS*30]
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 600]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 600]
             # self.images = self.images_c[:int(0.4*len(self.images_c))]cfg.NUM_TRANS*len(self.images_testanormal)
             # self.labels = self.labels_c[:int(0.4*len(self.labels_c))]
 

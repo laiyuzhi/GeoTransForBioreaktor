@@ -4,7 +4,7 @@ import csv
 import glob
 from PIL import Image
 from matplotlib import pyplot as plt
-import random 
+import random
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 import torchvision
@@ -29,7 +29,7 @@ class Bioreaktor_Detection(Dataset):
         for name in sorted(os.listdir(os.path.join(root))):
             if not os.path.isdir(os.path.join(root, name)):
                 continue
-    
+
             self.name2label[name] = len(self.name2label.keys())
 
         self.transformation_dic = {}
@@ -39,9 +39,9 @@ class Bioreaktor_Detection(Dataset):
                                                            (0, -self.max_ty, self.max_ty),
                                                            range(4))):
             self.transformation_dic[i] = transform
-        
+
         # Rotation 4
-        # for i in range(cfg.NUM_TRANS):    
+        # for i in range(cfg.NUM_TRANS):
         #     self.transformation_dic[i] = [False, 0, 0, i]
         #  Transaltion Flip 18
         # for i, transform in zip(range(cfg.NUM_TRANS), itertools.product((False, True),
@@ -53,33 +53,33 @@ class Bioreaktor_Detection(Dataset):
         #     list_temp.insert(1, transform[1])
         #     list_temp.insert(2, transform[2])
         #     self.transformation_dic[i] = list_temp
-            
+
 
         # save path
         self.images = []
         self.labels = []
-        self.images_train, self.labels_train, self.images_testanormal, self.labels_testanormal, self.images_testanormal1, self.labels_testanormal1 = self.load_csv('train.csv', 'test_big.csv', 'test_small.csv') 
-        
-        # traindata 
+        self.images_train, self.labels_train, self.images_testanormal, self.labels_testanormal, self.images_testanormal1, self.labels_testanormal1 = self.load_csv('train.csv', 'test_big.csv', 'test_small.csv')
+
+        # traindata
         if mode == 'train':
             self.images = self.images_train[:cfg.NUM_TRANS*4000]
             self.labels = self.labels_train[:cfg.NUM_TRANS*4000]
         # testdata anormal
         elif mode == 'testbig':
-            
-            self.images = self.images_testanormal[:cfg.NUM_TRANS*len(self.images_testanormal)]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS*len(self.images_testanormal)]
+
+            self.images = self.images_testanormal[:cfg.NUM_TRANS*1000]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS*1000]
         elif mode == 'testsmall':
-          
-            self.images = self.images_testanormal1[:int(cfg.NUM_TRANS*len(self.images_testanormal1)*0.3)]
-            self.labels = self.labels_testanormal1[:int(cfg.NUM_TRANS*len(self.images_testanormal1)*0.3)]
-        ## vali data normal nicht trainiert    
+
+            self.images = self.images_testanormal1[:int(cfg.NUM_TRANS*1000)]
+            self.labels = self.labels_testanormal1[:int(cfg.NUM_TRANS*1000)]
+        ## vali data normal nicht trainiert
         else:
-            self.images = self.images_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*4100]
-            self.labels = self.labels_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*4100]
+            self.images = self.images_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*5000]
+            self.labels = self.labels_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*5000]
             # self.images = self.images_c[:int(0.4*len(self.images_c))]len(self.images_train) cfg.NUM_TRANS*len(self.images_testanormal)cfg.NUM_TRANS*len(self.images_testanormal1)
             # self.labels = self.labels_c[:int(0.4*len(self.labels_c))]
-                                  
+
     def load_csv(self, filename_train, filename_testanormal, filename_testanormal1):
 
         if not (os.path.exists(os.path.join(self.root, filename_train)) and os.path.exists(os.path.join(self.root, filename_testanormal)) and os.path.exists(os.path.join(self.root, filename_testanormal1))):
@@ -102,11 +102,11 @@ class Bioreaktor_Detection(Dataset):
                     testanormal += glob.glob(os.path.join(self.root, name, '*.png'))
                     testanormal += glob.glob(os.path.join(self.root, name, '*.jpg'))
                     testanormal += glob.glob(os.path.join(self.root, name, '*.jpeg'))
-                
+
 
             # 24946 ['E:\\Program Files\\praktikum\\UdemyTF_Template-main\\Chapter9_AdvancedDL
             # \\Chapter9_1_CustomDataset\\Cat\\0.jpg',
-            
+
             print(len(train), train[0])
             print(len(testanormal1), testanormal1[0])
             print(len(testanormal), testanormal[0])
@@ -127,7 +127,7 @@ class Bioreaktor_Detection(Dataset):
                 writer_2 = csv.writer(f2)
                 for img, i in itertools.product(testanormal, range(cfg.NUM_TRANS)): # 'cat\\1.jpg'
                     name = img.split(os.sep)[-2]
-                    
+
                     label = i
                     # 'dog', 1
                     writer_2.writerow([img, label])
@@ -136,7 +136,7 @@ class Bioreaktor_Detection(Dataset):
                 writer_3 = csv.writer(f3)
                 for img, i in itertools.product(testanormal1, range(cfg.NUM_TRANS)): # 'cat\\1.jpg'
                     name = img.split(os.sep)[-2]
-                    
+
                     label = i
                     # 'dog', 1
                     writer_3.writerow([img, label])
@@ -162,17 +162,17 @@ class Bioreaktor_Detection(Dataset):
                     for row in reader_2:
                         # 'dog\\1.jpg', 1
                         img, label = row
-                        
+
                         label = int(label)
 
                         images_testanormal.append(img)
                         labels_testanormal.append(label)
-                    
+
                     reader_3 = csv.reader(f3)
                     for row in reader_3:
                         # 'dog\\1.jpg', 1
                         img, label = row
-                        
+
                         label = int(label)
 
                         images_testanormal1.append(img)
@@ -186,7 +186,7 @@ class Bioreaktor_Detection(Dataset):
     def __len__(self):
 
         return len(self.images)
-    
+
     def __getitem__(self, idx):
         # idx~[0~len(images)]
         # self.images, self.labels
@@ -220,7 +220,7 @@ class Bioreaktor_Detection(Dataset):
             img = torch.squeeze(img, 0)
         if self.transformation_dic[transformlabel][3] != 0:
             img = torch.rot90(img, k=self.transformation_dic[transformlabel][3], dims=(1, 2))
-        
+
         transformlabel = torch.tensor(transformlabel)
         return img, transformlabel
 
@@ -231,7 +231,7 @@ class Bioreaktor_Detection(Dataset):
         #     # transforms.CenterCrop(self.resize),
         #     transforms.ToTensor()
         # ])
-    
+
     def denormalize(self, x_hat):
 
         mean = [0.485,]
@@ -245,11 +245,11 @@ class Bioreaktor_Detection(Dataset):
         std = torch.tensor(std).unsqueeze(1).unsqueeze(1)
         # print(mean.shape, std.shape)
         x = x_hat * std + mean
-        
+
         return x
 
 
-# oot = "F:\\data_lai\\unimodel_data"        
+# oot = "F:\\data_lai\\unimodel_data"
 # train_db = Bioreaktor_Detection(root, 64, mode='train')
 # Iter = iter(train_db)
 # for i in range(72):

@@ -15,15 +15,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-
 def load_data(dataname):
-    if dataname == 'Luft':
-        root = 'F:\\data_lai\\preprocess\\unimodelLuft_data'
+    if dataname == 'Speed300' or 'Speed500':
+        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2'
         batchsz = cfg.BATCH_SIZE
         num_trans = cfg.NUM_TRANS
-        test_db = Luft(root, 64, mode='test')
-        vali_db = Luft(root, 64, mode='vali')
+        if dataname == 'Speed500'
+            test_db = Speed(root, 64, mode='testbig')
+        else:
+            test_db = Speed(root, 64, mode='testsmall')
+        vali_db = Speed(root, 64, mode='vali')
         vali_loader = DataLoader(vali_db, batch_size=batchsz, num_workers=0)
         test_loader = DataLoader(test_db, batch_size=batchsz, num_workers=0)
         x, label = iter(vali_loader).next()
@@ -32,7 +33,7 @@ def load_data(dataname):
         device = torch.device('cuda')
         # viz = visdom.Visdom()
         model = WideResNet(16, num_trans, 8).to(device)
-        model.load_state_dict(torch.load('E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor\\geoTrans\\mdl\\ModelLuftBest.mdl'))
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/mdl/modelspeedfordata2.mdl'))
 
         # Eva for normal data
         model.eval()
@@ -57,7 +58,7 @@ def load_data(dataname):
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
             TPFN = torch.eq(total_pred, total_label).float().sum(1)
-            TPFN_prob = TPFN / cfg.NUM_TRANS
+            TPFN_prob = torch.ones_like(TPFN) - TPFN / cfg.NUM_TRANS
 
         # Eva for anormal data
         model.eval()
@@ -82,22 +83,96 @@ def load_data(dataname):
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
             TNFP = torch.eq(total_pred, total_label).float().sum(1)
-            TNFP_prob = TNFP / cfg.NUM_TRANS
+            TNFP_prob = torch.ones_like(TNFP) - TNFP / cfg.NUM_TRANS
 
         TPFNTNFP_prob = torch.cat((TPFN_prob, TNFP_prob), 0)
-        TPFNTNFP_label = torch.cat((torch.ones_like(TPFN), torch.zeros_like(TNFP)), 0)
+        TPFNTNFP_label = torch.cat((torch.zeros_like(TPFN), torch.ones_like(TNFP)), 0)
+
+        TPFNTNFP_label = torch.Tensor.cpu(TPFNTNFP_label)
+        TPFNTNFP_prob = torch.Tensor.cpu(TPFNTNFP_prob)
+
+    if dataname == 'Luft':
+        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelLuft_data'
+        batchsz = cfg.BATCH_SIZE
+        num_trans = cfg.NUM_TRANS
+        test_db = Luft(root, 64, mode='test')
+        vali_db = Luft(root, 64, mode='vali')
+        vali_loader = DataLoader(vali_db, batch_size=batchsz, num_workers=0)
+        test_loader = DataLoader(test_db, batch_size=batchsz, num_workers=0)
+        x, label = iter(vali_loader).next()
+        print('x:', x.shape, 'label:', label.shape)
+
+        device = torch.device('cuda')
+        # viz = visdom.Visdom()
+        model = WideResNet(16, num_trans, 8).to(device)
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/mdl/ModelLuftBest.mdl'))
+
+        # Eva for normal data
+        model.eval()
+        with torch.no_grad():
+            pbar = tqdm(enumerate(vali_loader), total=len(vali_loader))
+            for batchidx, (x, label) in pbar:
+                x, label = x.to(device), label.to(device)
+
+                # [b, 72]
+                logits = model(x)
+                # [b]
+                pred = logits.argmax(dim=1)
+
+                # [b] vs [b] => scalar tensor
+                # cat to calcute confusion matrix
+                if batchidx == 0:
+                    total_pred = pred
+                    total_label = label
+                else:
+                    total_pred = torch.cat((total_pred, pred), 0)
+                    total_label = torch.cat((total_label, label), 0)
+            total_pred = total_pred.view((-1, 72))
+            total_label = total_label.view((-1, 72))
+            TPFN = torch.eq(total_pred, total_label).float().sum(1)
+            TPFN_prob = torch.ones_like(TPFN) - TPFN / cfg.NUM_TRANS
+
+        # Eva for anormal data
+        model.eval()
+        with torch.no_grad():
+            pbar = tqdm(enumerate(test_loader), total=len(test_loader))
+            for batchidx, (x, label) in pbar:
+                x, label = x.to(device), label.to(device)
+
+                # [b, 72]
+                logits = model(x)
+                # [b]
+                pred = logits.argmax(dim=1)
+
+                # [b] vs [b] => scalar tensor
+                # cat to calcute confusion matrix
+                if batchidx == 0:
+                    total_pred = pred
+                    total_label = label
+                else:
+                    total_pred = torch.cat((total_pred, pred), 0)
+                    total_label = torch.cat((total_label, label), 0)
+            total_pred = total_pred.view((-1, 72))
+            total_label = total_label.view((-1, 72))
+            TNFP = torch.eq(total_pred, total_label).float().sum(1)
+            TNFP_prob = torch.ones_like(TNFP) - TNFP / cfg.NUM_TRANS
+
+        TPFNTNFP_prob = torch.cat((TPFN_prob, TNFP_prob), 0)
+        TPFNTNFP_label = torch.cat((torch.zeros_like(TPFN), torch.ones_like(TNFP)), 0)
 
         TPFNTNFP_label = torch.Tensor.cpu(TPFNTNFP_label)
         TPFNTNFP_prob = torch.Tensor.cpu(TPFNTNFP_prob)
     return TPFNTNFP_label, TPFNTNFP_prob
 
+
 def cf_matrix(prob, label, threshold):
-    pred = torch.where(prob >= threshold, 1, 0)
+    pred = torch.where(prob >= threshold, torch.tensor(1), torch.tensor(0))
     print(pred)
     pred = torch.Tensor.cpu(pred)
     label = torch.Tensor.cpu(label)
 
     return confusion_matrix(label, pred)
+
 
 def draw_roc(label, prob):
     label = label
@@ -105,6 +180,7 @@ def draw_roc(label, prob):
     fpr, tpr, threshold = roc_curve(label, prob)
     print(threshold)
     roc_auc = auc(fpr, tpr)
+    plt.ion()
     plt.figure()
     plt.plot(fpr, tpr, label='ROC curve')
     plt.plot([0, 1], [0, 1], 'k--')
@@ -112,17 +188,34 @@ def draw_roc(label, prob):
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title("ROC Curve(Anormalies: Air)")
+    plt.title("ROC Curve(Anormalies: Speed)")
     plt.legend(loc="lower right")
-    plt.savefig("ROC Curve(Anormalies: Air).png")
+    plt.savefig("ROC Curve(Anormalies: Speed)500.png")
     plt.show()
-    maxindex = (tpr-fpr).tolist().index(max(tpr-fpr))
+    plt.close()
+    maxindex = (tpr - fpr).tolist().index(max(tpr - fpr))
     best_threshold = threshold[maxindex]
     return best_threshold
 
-label, prob = load_data('Luft')
+label, prob = load_data('Speed300')
 print(label, prob)
 threshold = draw_roc(label, prob)
 print(threshold)
-print(cf_matrix(prob, label, threshold))
+conf_matrix = cf_matrix(prob, label, threshold)
 
+plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues)
+thresh = conf_matrix.max() / 2
+for x in range(2):
+    for y in range(2):
+        info = int(conf_matrix[y, x])
+        plt.text(x, y, info,
+                 verticalalignment='center',
+                 horizontalalignment='center',
+                 color="white" if info > thresh else "black")
+
+# plt.tight_layout()
+plt.yticks(range(2), ['normal', 'anormal'])
+plt.xticks(range(2), ['normal', 'anormal'], rotation=45)
+plt.savefig("Confusion Matrix(Anormalies: Speed500).png", bbox_inches='tight')
+plt.ioff()
+plt.show()
