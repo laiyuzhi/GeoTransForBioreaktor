@@ -1,12 +1,12 @@
 
 import sys
-sys.path.append('E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor-main\\geoTrans')
+sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 
 import re
 import utils.Config as cfg
 print(cfg.BATCH_SIZE)
-string="Speed200"
-print(type(int(re.findall(r"\d+",string)[0])))
+string = "Speed200Luft2"
+print([int(x) for x in re.findall(r"\d+", string)])
 
 
 label = [1, 200]

@@ -13,10 +13,11 @@ import visdom
 import itertools
 import torch.nn.functional as f
 import sys
-sys.path.append('E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor-main\\geoTrans')
+sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from utils import Config as cfg
 import cv2
 import re
+
 
 class Bioreaktor_Detection(Dataset):
 
@@ -64,26 +65,25 @@ class Bioreaktor_Detection(Dataset):
         self.images = []
         self.labels = []
 
-        # traindata
+        # traindatalen(self.images_train)
         if mode == 'Train':
             self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('train.csv')
             self.images = self.images_train[:cfg.NUM_TRANS * len(self.images_train)]
             self.labels = self.labels_train[:cfg.NUM_TRANS * len(self.images_train)]
-            self.multi_inputs = self.train_multi_inputs
-        # testdata anormal
+            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * len(self.images_train)]
+        # testdata anormallen(self.images_testanormal)
         if mode == 'Test':
             # a = self.images_c[10000:10100]
             self. images_testanormal, self.testanormal_multi_inputs, self.labels_testanormal = self.load_csv('testanormal.csv')
             self.images = self.images_testanormal[:cfg.NUM_TRANS * len(self.images_testanormal)]
             self.labels = self.labels_testanormal[:cfg.NUM_TRANS * len(self.images_testanormal)]
-            self.multi_inputs = self.testanormal_multi_inputs
-        ## vali data normal nicht trainiert
+            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * len(self.images_testanormal)]
+        ## vali data normal nicht trainiertlen(self.images_testnormal)
         if mode == 'Vali':
-            self. images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
+            self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
             self.images = self.images_testnormal[:cfg.NUM_TRANS * len(self.images_testnormal)]
             self.labels = self.labels_testnormal[:cfg.NUM_TRANS * len(self.images_testnormal)]
-            self.multi_inputs = self.testnormal_multi_inputs
-
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * len(self.images_testnormal)]
 
     def load_csv(self, filename):
 
@@ -195,14 +195,14 @@ class Bioreaktor_Detection(Dataset):
         return x
 
 
-root = "F:\\data_lai\\preprocess\\MultimodelSpeed"
-train_db = Bioreaktor_Detection(root, 64, mode='Train')
-train_loader = DataLoader(train_db, batch_size=64, shuffle=True,
-                            num_workers=0)
-testnormal_db = Bioreaktor_Detection(root, 64, mode='Vali')
-testanormal_db = Bioreaktor_Detection(root, 64, mode='Test')
-x1, x2, label = iter(train_loader).next()
-print('x2:', x2.shape, 'label:', label.shape)
+# root = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeed"
+# train_db = Bioreaktor_Detection(root, 64, mode='Train')
+# train_loader = DataLoader(train_db, batch_size=64, shuffle=True,
+#                             num_workers=0)
+# testnormal_db = Bioreaktor_Detection(root, 64, mode='Vali')
+# testanormal_db = Bioreaktor_Detection(root, 64, mode='Test')
+# x1, x2, label = iter(train_loader).next()
+# print('x2:', x2.view(64, 1).shape, 'label:', label.shape)
 # for i in range(72):
 #     x, y, z = next(Iter)
 #     print(len(y), z)

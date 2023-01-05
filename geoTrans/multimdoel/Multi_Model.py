@@ -5,7 +5,7 @@ import netron     ###################
 import torch.onnx ################
 
 import sys
-sys.path.append('E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor-main\\geoTrans')
+sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from utils import Config as cfg
 
 class BasicBlock(nn.Module):
@@ -141,15 +141,15 @@ class WideResNet(nn.Module):
 
         return out4
 
-device = torch.device('cuda')
-criterion = nn.CrossEntropyLoss()
-    # viz = visdom.Visdom()
+# device = torch.device('cuda')
+# criterion = nn.CrossEntropyLoss()
+#     # viz = visdom.Visdom()
 
-model = WideResNet(16, cfg.NUM_TRANS, 8)
-print(model)
-x1 = torch.randn(64, 1, 64, 64)
-x2 = torch.randn(64, 1)
-print(x2.size())
+# model = WideResNet(16, cfg.NUM_TRANS, 8)
+# print(model)
+# x1 = torch.randn(64, 1, 64, 64)
+# x2 = torch.randn(64, 1)
+# print(x2.size())
 
-logits = model(x1, x2)
-print(logits.size())
+# logits = model(x1, x2)
+# print(logits.size())
