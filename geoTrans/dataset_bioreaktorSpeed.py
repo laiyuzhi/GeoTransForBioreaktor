@@ -62,8 +62,8 @@ class Bioreaktor_Detection(Dataset):
 
         # traindata
         if mode == 'train':
-            self.images = self.images_train[:cfg.NUM_TRANS*4000]
-            self.labels = self.labels_train[:cfg.NUM_TRANS*4000]
+            self.images = self.images_train[:cfg.NUM_TRANS*2000]
+            self.labels = self.labels_train[:cfg.NUM_TRANS*2000]
         # testdata anormal
         elif mode == 'testbig':
 
@@ -249,7 +249,7 @@ class Bioreaktor_Detection(Dataset):
         return x
 
 
-# oot = "F:\\data_lai\\unimodel_data"
+# root = "F:\\data_lai\\unimodel_data"
 # train_db = Bioreaktor_Detection(root, 64, mode='train')
 # Iter = iter(train_db)
 # for i in range(72):

@@ -37,6 +37,7 @@ class BasicBlock(nn.Module):
         out = torch.add(out, bn1 if self.is_channel_equal else self.convShortcut(bn1))
         return out
 
+
 class ResBlock(nn.Module):
     def __init__(self, input, output):
         super(ResBlock, self).__init__()
@@ -62,6 +63,28 @@ class ResBlock(nn.Module):
         return out
 
 
+class MlpBlock(nn.Module):
+    def __init__(self, input, output):
+        super(MlpBlock, self).__init__()
+        self.bn1 = nn.BatchNorm1d(input)
+        self.relu1 = nn.ReLU()
+        self.fc1 = nn.Linear(input, output)
+        nn.init.kaiming_uniform_(self.fc1.weight)
+        self.bn2 = nn.BatchNorm1d(output)
+        self.relu2 = nn.ReLU()
+        self.fc2 = nn.Linear(output, output)
+        nn.init.kaiming_uniform_(self.fc2.weight)
+
+    def forward(self, x):
+        bn1 = self.bn1(x)
+        bn1 = self.relu1(bn1)
+        out = self.fc1(bn1)
+        out = self.bn2(out)
+        out = self.relu2(out)
+        out = self.fc2(out)
+        return out
+
+
 
 
 class Conv_Group(nn.Module):
@@ -77,10 +100,10 @@ class Conv_Group(nn.Module):
         return self.layer(x)
 
 class WideResNet(nn.Module):
-    def __init__(self, depth, num_classes, widen_factor, res_factor=8, dropRate=0.0):
+    def __init__(self, depth, num_classes, widen_factor, res_factor=5, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
-        fcnChannels = [32*res_factor, 16*res_factor]
+        fcnChannels = [3*res_factor, 2*res_factor]
         assert ((depth-4)%6 == 0), 'depth should be 6n+4'
         n = (depth - 4) / 6
         self.h = int(cfg.INPUT_H / 2 / 2 / 8)
@@ -104,11 +127,11 @@ class WideResNet(nn.Module):
         self.inputLayer = nn.Linear(cfg.INPUT_MULTI, fcnChannels[0])
         nn.init.kaiming_uniform_(self.inputLayer.weight)
         #fcn resblock1
-        self.fcnblock1 = ResBlock(fcnChannels[0], fcnChannels[1])
+        self.fcnblock1 = MlpBlock(fcnChannels[0], fcnChannels[1])
         # fcn resblock2
-        self.fcnblock2 = ResBlock(fcnChannels[0] + fcnChannels[1], fcnChannels[1])
+        self.fcnblock2 = MlpBlock(fcnChannels[0] + fcnChannels[1], fcnChannels[1])
         # fcv resblock3
-        self.fcnblock3 = ResBlock(fcnChannels[0] + 2 * fcnChannels[1], fcnChannels[1])
+        self.fcnblock3 = MlpBlock(fcnChannels[0] + 2 * fcnChannels[1], fcnChannels[1])
         # outputlayer
         self.outbn = nn.BatchNorm1d(fcnChannels[1])
         self.outrelu = nn.ReLU()
@@ -124,7 +147,7 @@ class WideResNet(nn.Module):
         out1 = f.avg_pool2d(out1, 8)
         out1 = out1.view(-1, self.nchannels * self.w * self.h)
         out1 = self.fc(out1)
-        #size 64, 256
+
 
         #Branch for Prozessparameter
         out2 = self.inputLayer(x2)

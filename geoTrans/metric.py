@@ -17,10 +17,10 @@ import matplotlib.pyplot as plt
 
 def load_data(dataname):
     if dataname == 'Speed300' or 'Speed500':
-        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2'
+        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData'
         batchsz = cfg.BATCH_SIZE
         num_trans = cfg.NUM_TRANS
-        if dataname == 'Speed500'
+        if dataname == 'Speed500':
             test_db = Speed(root, 64, mode='testbig')
         else:
             test_db = Speed(root, 64, mode='testsmall')
@@ -33,7 +33,7 @@ def load_data(dataname):
         device = torch.device('cuda')
         # viz = visdom.Visdom()
         model = WideResNet(16, num_trans, 8).to(device)
-        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/mdl/modelspeedfordata2.mdl'))
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/mdl/modelspeedfordata1.mdl'))
 
         # Eva for normal data
         model.eval()
@@ -190,7 +190,7 @@ def draw_roc(label, prob):
     plt.ylabel('True Positive Rate')
     plt.title("ROC Curve(Anormalies: Speed)")
     plt.legend(loc="lower right")
-    plt.savefig("ROC Curve(Anormalies: Speed)500.png")
+    plt.savefig("ROC Curve(Anormalies: Speed)3002.png")
     plt.show()
     plt.close()
     maxindex = (tpr - fpr).tolist().index(max(tpr - fpr))
@@ -216,6 +216,6 @@ for x in range(2):
 # plt.tight_layout()
 plt.yticks(range(2), ['normal', 'anormal'])
 plt.xticks(range(2), ['normal', 'anormal'], rotation=45)
-plt.savefig("Confusion Matrix(Anormalies: Speed500).png", bbox_inches='tight')
+plt.savefig("Confusion Matrix(Anormalies: Speed300)2.png", bbox_inches='tight')
 plt.ioff()
 plt.show()

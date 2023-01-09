@@ -26,7 +26,7 @@ class Bioreaktor_Detection(Dataset):
         self.mode = mode
         if mode == 'Train':
             self.root = os.path.join(root, 'Train')
-        if mode == 'Test' or mode == 'Vali':
+        if mode == 'Test' or mode == 'Vali' or mode == 'Prozess':
             self.root = os.path.join(root, 'Test')
         self.resize = resize
         self.max_tx = translation_x
@@ -65,25 +65,38 @@ class Bioreaktor_Detection(Dataset):
         self.images = []
         self.labels = []
 
-        # traindatalen(self.images_train)
-        if mode == 'Train':
-            self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('train.csv')
-            self.images = self.images_train[:cfg.NUM_TRANS * len(self.images_train)]
-            self.labels = self.labels_train[:cfg.NUM_TRANS * len(self.images_train)]
-            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * len(self.images_train)]
-        # testdata anormallen(self.images_testanormal)
+        # traindatalen(self.images_train) 1200
         if mode == 'Test':
+            self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('testanormal.csv')
+            self.images = self.images_train[:cfg.NUM_TRANS * 100]
+            self.labels = self.labels_train[:cfg.NUM_TRANS * 100]
+            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 100]
+            # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
+        # testdata anormallen(self.images_testanormal)
+        if mode == 'Train':
             # a = self.images_c[10000:10100]
-            self. images_testanormal, self.testanormal_multi_inputs, self.labels_testanormal = self.load_csv('testanormal.csv')
-            self.images = self.images_testanormal[:cfg.NUM_TRANS * len(self.images_testanormal)]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * len(self.images_testanormal)]
-            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * len(self.images_testanormal)]
+            self. images_testanormal, self.testanormal_multi_inputs, self.labels_testanormal = self.load_csv('train.csv')
+            self.images = self.images_testanormal[:cfg.NUM_TRANS * 1000]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 1000]
+            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * 1000]
+            # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
         ## vali data normal nicht trainiertlen(self.images_testnormal)
         if mode == 'Vali':
             self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
-            self.images = self.images_testnormal[:cfg.NUM_TRANS * len(self.images_testnormal)]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * len(self.images_testnormal)]
-            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * len(self.images_testnormal)]
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 100]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 100]
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 100]
+            # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
+        ## Prozessanomalie
+        if mode == 'Prozess':
+            self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 1000]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 1000]
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 1000]
+            # list1 = [200, 400, 600, 800]
+            # self.multi_inputs = [np.random.choice(list(set(list1) ^ set([self.multi_inputs[i]]))) for i in range(len(self.multi_inputs))]
+            # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) / 400).tolist()
+
 
     def load_csv(self, filename):
 
@@ -92,15 +105,15 @@ class Bioreaktor_Detection(Dataset):
             for name in self.name2label.keys():
                 # 'cat\\1.jpg
                 # print(os.path.join(self.root, name))
-                if self.mode == 'Train' and (name == 'Speed400' or name == 'Speed600' or name == 'Speed800'):
+                if self.mode == 'Test' and (name == 'Speed200' or name == 'Speed800'):
                     data_list += glob.glob(os.path.join(self.root, name, '*.png'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpg'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpeg'))
-                elif self.mode == 'Vali' and (name == 'Speed400' or name == 'Speed600' or name == 'Speed800'):
+                elif (self.mode == 'Vali' or self.mode == 'Prozess') and (name == 'Speed400' or name == 'Speed600'):
                     data_list += glob.glob(os.path.join(self.root, name, '*.png'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpg'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpeg'))
-                elif self.mode == 'Test' and (name == 'Speed200'):
+                elif self.mode == 'Train' and (name == 'Speed400' or name == 'Speed600'):
                     data_list += glob.glob(os.path.join(self.root, name, '*.png'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpg'))
                     data_list += glob.glob(os.path.join(self.root, name, '*.jpeg'))
@@ -112,6 +125,7 @@ class Bioreaktor_Detection(Dataset):
             print(len(data_list), data_list[0])
 
             random.shuffle(data_list)
+
 
             with open(os.path.join(self.root, filename), mode='w', newline='') as f1:
                 writer_1 = csv.writer(f1)
@@ -175,7 +189,14 @@ class Bioreaktor_Detection(Dataset):
             img = torch.rot90(img, k=self.transformation_dic[transformlabel][3], dims=(1, 2))
 
         transformlabel = torch.tensor(transformlabel)
-        multi_inputs = torch.tensor(multi_inputs)
+        list1 = [200., 400., 600., 800.]
+        if self.mode == 'Prozess':
+            multi_inputs = np.random.choice(list(set(list1) ^ set([multi_inputs])))
+            multi_inputs = (multi_inputs - 500 + random.gauss(0,1)) / 258.1989
+            multi_inputs = torch.tensor(multi_inputs)
+        else:
+            multi_inputs = (multi_inputs - 500 + random.gauss(0,1)) / 258.1989
+            multi_inputs = torch.tensor(multi_inputs)
         return img, multi_inputs, transformlabel
 
     def denormalize(self, x_hat):
@@ -197,12 +218,17 @@ class Bioreaktor_Detection(Dataset):
 
 # root = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeed"
 # train_db = Bioreaktor_Detection(root, 64, mode='Train')
-# train_loader = DataLoader(train_db, batch_size=64, shuffle=True,
+# train_loader = DataLoader(train_db, batch_size=64, shuffle=False,
 #                             num_workers=0)
 # testnormal_db = Bioreaktor_Detection(root, 64, mode='Vali')
+# testnormal_loader = DataLoader(train_db, batch_size=64, shuffle=True,
+#                             num_workers=0)
 # testanormal_db = Bioreaktor_Detection(root, 64, mode='Test')
+# prozessanormal_db = Bioreaktor_Detection(root, 64, mode='Prozess')
+# prozess_loader = DataLoader(prozessanormal_db, batch_size=64, shuffle=False,
+#                             num_workers=0)
 # x1, x2, label = iter(train_loader).next()
-# print('x2:', x2.view(64, 1).shape, 'label:', label.shape)
+# print('x2:', x2, 'label:', label)
 # for i in range(72):
 #     x, y, z = next(Iter)
 #     print(len(y), z)
