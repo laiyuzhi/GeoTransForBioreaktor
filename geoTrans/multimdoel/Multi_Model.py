@@ -100,7 +100,7 @@ class Conv_Group(nn.Module):
         return self.layer(x)
 
 class WideResNet(nn.Module):
-    def __init__(self, depth, num_classes, widen_factor, res_factor=5, dropRate=0.0):
+    def __init__(self, depth, num_classes, widen_factor, res_factor=10, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
         fcnChannels = [3*res_factor, 2*res_factor]

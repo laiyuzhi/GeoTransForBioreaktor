@@ -38,7 +38,7 @@ def load_csv(filename, root):
 
 class UserCrop:
     def __init__(self, filename, root):
-        self.path = "F:\\data_lai\\MultimodelSpeed\\Speed200\\1668779706172_camera_frame.png"
+        self.path = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft/Speed400Luft2/1668792765397_camera_frame.png"
         self.root = root
         self.filename = filename
 
@@ -79,7 +79,7 @@ class UserCrop:
     # return images, labels
 
 def cut_picture():
-    img, bbox = UserCrop('bboxMultiSpeed', 'F:\\data_lai\\MultimodelSpeed').cut()
+    img, bbox = UserCrop('bboxMultiSpeed', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft').cut()
     cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
     cv2.namedWindow("cut")
     cv2.imshow("cut", cut)
@@ -113,9 +113,9 @@ def cut_picture():
     #     cv2.imshow("s", cut)
     #     cv2.waitKey(0)
 def preprocess():
-    root = 'F:\\data_lai\\MultimodelSpeed'
-    save_root = 'F:\\data_lai\\preprocess\\MultimodelSpeed'
-    _, bbox = UserCrop('bboxMultiSpeed', 'F:\\data_lai\\MultimodelSpeed').cut()
+    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft'
+    save_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeedLuft'
+    _, bbox = UserCrop('bboxMultiSpeed', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft').cut()
     for name in os.listdir(root):
         if not os.path.isdir(os.path.join(root, name)):
             continue
@@ -141,4 +141,4 @@ def preprocess():
         print(i)
 
 if __name__ =='__main__':
-    preprocess()
+   preprocess()

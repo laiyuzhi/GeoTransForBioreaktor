@@ -68,9 +68,9 @@ class Bioreaktor_Detection(Dataset):
         # traindatalen(self.images_train) 1200
         if mode == 'Test':
             self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('testanormal.csv')
-            self.images = self.images_train[:cfg.NUM_TRANS * 100]
-            self.labels = self.labels_train[:cfg.NUM_TRANS * 100]
-            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 100]
+            self.images = self.images_train[:cfg.NUM_TRANS * 500]
+            self.labels = self.labels_train[:cfg.NUM_TRANS * 500]
+            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 500]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
         # testdata anormallen(self.images_testanormal)
         if mode == 'Train':
@@ -83,16 +83,16 @@ class Bioreaktor_Detection(Dataset):
         ## vali data normal nicht trainiertlen(self.images_testnormal)
         if mode == 'Vali':
             self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
-            self.images = self.images_testnormal[:cfg.NUM_TRANS * 100]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 100]
-            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 100]
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 1000]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 1000]
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 1000]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
         ## Prozessanomalie
         if mode == 'Prozess':
             self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('testnormal.csv')
-            self.images = self.images_testnormal[:cfg.NUM_TRANS * 1000]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 1000]
-            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 1000]
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 500]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 500]
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 500]
             # list1 = [200, 400, 600, 800]
             # self.multi_inputs = [np.random.choice(list(set(list1) ^ set([self.multi_inputs[i]]))) for i in range(len(self.multi_inputs))]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) / 400).tolist()
@@ -193,10 +193,10 @@ class Bioreaktor_Detection(Dataset):
         if self.mode == 'Prozess':
             multi_inputs = np.random.choice(list(set(list1) ^ set([multi_inputs])))
             multi_inputs = (multi_inputs - 500 + random.gauss(0,1)) / 258.1989
-            multi_inputs = torch.tensor(multi_inputs)
+            multi_inputs = torch.tensor(multi_inputs).float()
         else:
             multi_inputs = (multi_inputs - 500 + random.gauss(0,1)) / 258.1989
-            multi_inputs = torch.tensor(multi_inputs)
+            multi_inputs = torch.tensor(multi_inputs).float()
         return img, multi_inputs, transformlabel
 
     def denormalize(self, x_hat):
