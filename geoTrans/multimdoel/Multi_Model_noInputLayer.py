@@ -103,7 +103,7 @@ class WideResNet(nn.Module):
     def __init__(self, depth, num_classes, widen_factor, res_factor=5, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
-        fcnChannels = [3*res_factor, 2*res_factor]
+        fcnChannels = [3*res_factor, 2*res_factor, 5*res_factor]
         assert ((depth-4)%6 == 0), 'depth should be 6n+4'
         n = (depth - 4) / 6
         self.h = int(cfg.INPUT_H / 2 / 2 / 8)
@@ -121,17 +121,18 @@ class WideResNet(nn.Module):
         # global average pooling
         self.bn = nn.BatchNorm2d(nChannels[3])
         self.relu = nn.ReLU()
-        self.fc = nn.Linear(nChannels[3]*self.h*self.w, fcnChannels[0])
+        self.fc = nn.Linear(nChannels[3]*self.h*self.w, fcnChannels[2])
+        self.outcnnbn = nn.BatchNorm1d(fcnChannels[2])
         nn.init.kaiming_uniform_(self.fc.weight)
         #Branch for fcn
-        self.inputLayer = nn.Linear(cfg.INPUT_MULTI, fcnChannels[0])
+        self.inputLayer = nn.Linear(cfg.INPUT_MULTI+fcnChannels[2], fcnChannels[0])
         nn.init.kaiming_uniform_(self.inputLayer.weight)
         #fcn resblock1
         self.fcnblock1 = MlpBlock(fcnChannels[0], fcnChannels[1])
         # fcn resblock2
         self.fcnblock2 = MlpBlock(fcnChannels[0] + cfg.INPUT_MULTI, fcnChannels[1])
         # fcv resblock3
-        self.fcnblock3 = MlpBlock(fcnChannels[0] + cfg.INPUT_MULTI + fcnChannels[1], fcnChannels[1])
+        self.fcnblock3 = MlpBlock(fcnChannels[2] + cfg.INPUT_MULTI + fcnChannels[1], fcnChannels[1])
         # outputlayer
         self.outbn = nn.BatchNorm1d(fcnChannels[1])
         self.outrelu = nn.ReLU()
@@ -147,13 +148,15 @@ class WideResNet(nn.Module):
         out1 = f.avg_pool2d(out1, 8)
         out1 = out1.view(-1, self.nchannels * self.w * self.h)
         out1 = self.fc(out1)
-
+        out1 = self.outbn(out1)
+        out1 = f.relu(out1)
 
         #Branch for Prozessparameter
         # out2 = self.inputLayer(x2)
         # out2 = self.fcnblock1(out2)
         # concate 1
         out3 = torch.cat((out1, x2), dim=1)
+        out3 = self.inputLayer(out3)
         out3 = self.fcnblock2(out3)
         # concate 2
         out4 = torch.cat((out1, x2, out3), dim=1)

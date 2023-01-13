@@ -40,7 +40,7 @@ def load_csv(filename, root):
 
 class UserCrop:
     def __init__(self, filename, root):
-        self.path = "F:\\data_lai\\normal_data\\1668874105.9117985_0.png"
+        self.path = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultiAll/Train10Zu/1668802503110_camera_frame.png"
         self.root = root
         self.filename = filename
 
@@ -81,7 +81,7 @@ class UserCrop:
     # return images, labels
 
 def cut_picture():
-    img, bbox = UserCrop('bboxMulti', 'F:\\data_lai\\normal_data').cut()
+    img, bbox = UserCrop('bboxMulti', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultiAll').cut()
     cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
     cv2.namedWindow("cut")
     cv2.imshow("cut", cut)
@@ -115,34 +115,55 @@ def cut_picture():
     #     cv2.imshow("s", cut)
     #     cv2.waitKey(0)
 def preprocess():
-    root = 'F:\\data_lai\\normal_data'
-    save_root = 'F:\\data_lai\\preprocess\\Multimodel'
+    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultiAll/Vali10Zu'
+    save_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll'
     _, bbox = UserCrop('bboxMulti', root).cut()
     i = 0
     for json_name in os.listdir(root):
         if json_name.endswith('.json'):
-            png_name = (json_name.split('.json')[0] + ".png")
+            png_name = (json_name.split('.json')[0] + '_camera_frame' + ".png")
             png_root = os.path.join(root, png_name)
             json_root = os.path.join(root, json_name)
             image = cv2.imread(png_root, cv2.IMREAD_GRAYSCALE)
             cut = image[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-            if i <= 3999:
-                save_path = os.path.join(save_root, 'Train')
+            if i <= 999999999:
+                save_path = os.path.join(save_root, 'Vali')
                 if not os.path.exists(save_path):
                         os.makedirs(save_path)
                 png_path = os.path.join(save_path, png_name)
-                json_path = os.path.join(save_root, 'Train', json_name)
-            else:
-                save_path = os.path.join(save_root, 'Test')
-                if not os.path.exists(save_path):
-                    os.makedirs(save_path)
-                png_path = os.path.join(save_path, png_name)
-                json_path = os.path.join(save_root, 'Test', json_name)
+                json_path = os.path.join(save_path, json_name)
+            # else:
+            #     save_path = os.path.join(save_root, 'Test')
+            #     if not os.path.exists(save_path):
+            #         os.makedirs(save_path)
+            #     png_path = os.path.join(save_path, png_name)
+            #     json_path = os.path.join(save_root, 'Test', json_name)
             cv2.imwrite(png_path, cut, [cv2.IMWRITE_PNG_COMPRESSION, 0])
             shutil.copyfile(json_root, json_path)
             i += 1
     print(i)
 
+def MakeDataSet():
+    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll/Vali'
+    for json_name in os.listdir(root):
+        if json_name.endswith('.json'):
+            png_name = (json_name.split('.json')[0] + '_camera_frame' ".png")
+            png_root = os.path.join(root, png_name)
+            json_root = os.path.join(root, json_name)
+            with open(os.path.join(json_root), 'r') as f2:
+                temp = json.load(f2)
+                multi_input = [temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"], temp["gas_flow_rate"]["data"]["opcua_value"]["value"]]
+                if 250 < multi_input[0] < 750.0 and 25.0 < multi_input[1] < 75.0:
+                    save_path = os.path.join(root, 'Vali')
+                    if not os.path.exists(save_path):
+                        os.makedirs(save_path)
+                else:
+                    continue
+
+                png_path = os.path.join(save_path, png_name)
+                json_path = os.path.join(save_path, json_name)
+            shutil.move(json_root, save_path)
+            shutil.move(png_root, save_path)
     # for name in os.listdir(root):
     #     if not os.path.isdir(os.path.join(root, name)):
     #         continue

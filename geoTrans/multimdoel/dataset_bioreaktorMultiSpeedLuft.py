@@ -76,9 +76,9 @@ class Bioreaktor_Detection(Dataset):
         if mode == 'Train':
             # a = self.images_c[10000:10100]
             self. images_testanormal, self.testanormal_multi_inputs, self.labels_testanormal = self.load_csv('train.csv')
-            self.images = self.images_testanormal[:cfg.NUM_TRANS * 1000]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 1000]
-            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * 1000]
+            self.images = self.images_testanormal[:cfg.NUM_TRANS * 200]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 200]
+            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * 200]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
         ## vali data normal nicht trainiertlen(self.images_testnormal)
         if mode == 'Vali':

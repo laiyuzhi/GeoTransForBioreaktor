@@ -13,11 +13,12 @@ import visdom
 import itertools
 import torch.nn.functional as f
 import sys
-sys.path.append('E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor-4\\geoTrans')
+sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from utils import Config as cfg
 import cv2
 import re
 import json
+import math
 
 
 class Bioreaktor_Detection(Dataset):
@@ -75,37 +76,28 @@ class Bioreaktor_Detection(Dataset):
         self.labels = []
 
         # traindatalen(self.images_train) 1200
-        if mode == 'Test1':
-            self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('test1anormal.csv')
-            self.images = self.images_train[:cfg.NUM_TRANS * 3]
-            self.labels = self.labels_train[:cfg.NUM_TRANS * 3]
-            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 3]
+        if mode == 'Test':
+            self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('vali.csv')
+            self.images = self.images_train[:cfg.NUM_TRANS * 100]
+            self.labels = self.labels_train[:cfg.NUM_TRANS * 100]
+            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 100]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
-        if mode == 'Test2':
-            self. images_train, self.train_multi_inputs, self.labels_train = self.load_csv('test2anormal.csv')
-            self.images = self.images_train[:cfg.NUM_TRANS * 3]
-            self.labels = self.labels_train[:cfg.NUM_TRANS * 3]
-            self.multi_inputs = self.train_multi_inputs[:cfg.NUM_TRANS * 3]
+
         # testdata anormallen(self.images_testanormal)
         if mode == 'Train':
             # a = self.images_c[10000:10100]
             self. images_testanormal, self.testanormal_multi_inputs, self.labels_testanormal = self.load_csv('train.csv')
-            self.images = self.images_testanormal[:cfg.NUM_TRANS * 3]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 3]
-            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * 3]
+            self.images = self.images_testanormal[:cfg.NUM_TRANS * 2000]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS * 2000]
+            self.multi_inputs = self.testanormal_multi_inputs[:cfg.NUM_TRANS * 2000]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
         ## vali data normal nicht trainiertlen(self.images_testnormal)
-        if mode == 'Vali1':
-            self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('test1normal.csv')
-            self.images = self.images_testnormal[:cfg.NUM_TRANS * 3]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 3]
-            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 3]
+        if mode == 'Vali':
+            self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('vali.csv')
+            self.images = self.images_testnormal[:cfg.NUM_TRANS * 100]
+            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 100]
+            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 100]
             # self.multi_inputs = (np.sum([np.random.randn(len(self.multi_inputs)).tolist(), self.multi_inputs], axis=0) - 400).tolist()
-        if mode == 'Vali1':
-            self.images_testnormal, self.testnormal_multi_inputs, self.labels_testnormal = self.load_csv('test2normal.csv')
-            self.images = self.images_testnormal[:cfg.NUM_TRANS * 1]
-            self.labels = self.labels_testnormal[:cfg.NUM_TRANS * 1]
-            self.multi_inputs = self.testnormal_multi_inputs[:cfg.NUM_TRANS * 1]
 
     def load_csv(self, filename):
 
@@ -114,10 +106,11 @@ class Bioreaktor_Detection(Dataset):
             png_list = []
             if self.mode == 'Train':
                 json_path = os.path.join(self.root, "Train")
-            elif self.mode == 'Test1' or self.mode == 'Vali1':
-                json_path = os.path.join(self.root, "Test1")
-            elif self.mode == 'Test2' or self.mode == 'Vali2':
-                json_path = os.path.join(self.root, "Test2")
+            elif self.mode == 'Test' or self.mode == 'Vali':
+                json_path = os.path.join(self.root, "Vali")
+                # json_path = os.path.join('/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll/Train/Test/Test2')
+            # elif self.mode == 'Test2':
+            #     json_path = os.path.join(self.root, "Test2")
 
             for json_name in os.listdir(json_path):
                 if json_name.endswith('.json'):
@@ -130,14 +123,14 @@ class Bioreaktor_Detection(Dataset):
             with open(os.path.join(self.root, filename), mode='w', newline='') as f1:
                 writer_1 = csv.writer(f1)
                 for name, i in itertools.product(json_list, range(cfg.NUM_TRANS)): # 'cat\\1.jpg'
-                    png = name.split('.json')[0] + '_camera_frame' + ".png"
-                    png_path = os.path.join(self.root, png)
-                    label = i
-                    with open(os.path.join(json_path, name), 'r') as f2:
-                        temp = json.load(f2)
-                        multi_input = [temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"], temp["gas_flow_rate"]["data"]["opcua_value"]["value"]]
-                    # 'speed200', 200, 0
-                    writer_1.writerow([png_path, label] + multi_input)
+                        png = name.split('.json')[0] + '_camera_frame' + ".png"
+                        png_path = os.path.join(json_path, png)
+                        label = i
+                        with open(os.path.join(json_path, name), 'r') as f2:
+                            temp = json.load(f2)
+                            multi_input = [temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"],float(round(temp["gas_flow_rate"]["data"]["opcua_value"]["value"]/10)*10) ]
+                        # 'speed200', 200, 0
+                        writer_1.writerow([png_path, label] + multi_input)
                 print('writen into csv file:', filename)
         # read from csv file
         images, labels, Speed, Volumestrom = [], [], [], []
@@ -193,13 +186,33 @@ class Bioreaktor_Detection(Dataset):
             img = torch.rot90(img, k=self.transformation_dic[transformlabel][3], dims=(1, 2))
 
         transformlabel = torch.tensor(transformlabel)
-        if self.mode == 'Test1' or self.mode == 'Test2':
-            multi_inputs[0] = (multi_inputs[0] - 500 + random.gauss(multi_inputs[0], 10)) / 288.6751
-            multi_inputs[1] = (multi_inputs[1] - 49.25 + random.gauss(multi_inputs[1], 1)) / 28.43
+        # if self.mode == 'Test2':
+        #     multi_inputs[0] = (multi_inputs[0] - 500 + random.gauss(multi_inputs[0], 10)) / 288.6751
+        #     multi_inputs[1] = (multi_inputs[1] - 49.25 + random.gauss(multi_inputs[1], 1)) / 28.43
+        #     multi_inputs = torch.tensor(multi_inputs)
+        if self.mode == 'Test':
+            if multi_inputs[0] <= 250:
+                multi_inputs[0] = (random.uniform(multi_inputs[0]+300, 900) - 450) / 259.8076
+            elif 250 <= multi_inputs[0] <= 650:
+                list0 = [random.uniform(multi_inputs[0]+300, 900), random.uniform(0, multi_inputs[0]-300)]
+                multi_inputs[0] = (np.random.choice(list0) - 450) / 259.8076
+            elif 650 <= multi_inputs[0]:
+                multi_inputs[0] = (random.uniform(0, multi_inputs[0]-300) - 450) / 259.8076
+
+            if 0 <= multi_inputs[1] <= 25:
+                multi_inputs[1] = (random.uniform(multi_inputs[1]+30, 90) - 45) / 25.98
+            elif 25 <= multi_inputs[0] <= 65:
+                list1 = [random.uniform(multi_inputs[1]+30, 90), random.uniform(0, multi_inputs[1]-30)]
+                multi_inputs[1] = (np.random.choice(list1) - 45) / 25.98
+            elif multi_inputs[1]:
+                multi_inputs[1] = (random.uniform(0, multi_inputs[1] - 30) - 45) / 25.98
+            multi_inputs[0] = float(multi_inputs[0])
+
+            multi_inputs[1] = float(multi_inputs[1])
             multi_inputs = torch.tensor(multi_inputs)
         else:
-            multi_inputs[0] = (multi_inputs[0] - 500) / 288.6751
-            multi_inputs[1] = (multi_inputs[1] - 49.25) / 28.43
+            multi_inputs[0] = (multi_inputs[0] - 450 + random.gauss(5,1)) / 259.8076
+            multi_inputs[1] = (multi_inputs[1] - 45 + random.gauss(0,0.6)) / 25.98
             multi_inputs = torch.tensor(multi_inputs)
         return img, multi_inputs, transformlabel
 
@@ -220,22 +233,25 @@ class Bioreaktor_Detection(Dataset):
         return x
 
 
-# root = "E:\\Program Files\\Abschlussarbeit\\GeoTransForBioreaktor-4\\geoTrans\\multimdoel\\yaml"
+# root = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll"
 # train_db = Bioreaktor_Detection(root, 64, mode='Train')
-# train_loader = DataLoader(train_db, batch_size=512, shuffle=False,
-#                         num_workers=0)
-# testnormal_db = Bioreaktor_Detection(root, 64, mode='Vali1')
+# train_loader = DataLoader(train_db, batch_size=64, shuffle=False,
+#                         num_workers=16)
+# print(1)
+# testnormal_db = Bioreaktor_Detection(root, 64, mode='Vali')
 # testnormal_loader = DataLoader(testnormal_db, batch_size=64, shuffle=False,
-#                             num_workers=0)
-# testanormal_db = Bioreaktor_Detection(root, 64, mode='Test1')
+#                             num_workers=16)
+# print(2)
+# testanormal_db = Bioreaktor_Detection(root, 64, mode='Test')
 # testanormal_loader = DataLoader(testanormal_db, batch_size=64, shuffle=False,
-#                             num_workers=0)
+#                             num_workers=16)
+# print(3)
 # # prozessanormal_db = Bioreaktor_Detection(root, 64, mode='Prozess')
 # # prozess_loader = DataLoader(prozessanormal_db, batch_size=64, shuffle=False,
 # #                             num_workers=0)
 # x1, x2, label = iter(testanormal_loader).next()
 # print('x2:', x2, 'label:', label)
-# for i in range(72):
+# # # # for i in range(72):
 #     x, y, z = next(Iter)
 #     print(len(y), z)
 #     # if i > 6:

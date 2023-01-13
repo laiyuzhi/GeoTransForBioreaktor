@@ -3,10 +3,10 @@ sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 from dataset_bioreaktorSpeed import Bioreaktor_Detection as Speed
 from dataset_bioreaktor import Bioreaktor_Detection as Luft
-from dataset_bioreaktorMultiSpeed import Bioreaktor_Detection
+from dataset_bioreaktorMulti import Bioreaktor_Detection
 from torch.utils.data import DataLoader, Dataset
 from Model import WideResNet
-from Multi_Model import WideResNet as Multimodel
+from Multi_Model_new import WideResNet as Multimodel
 import torch
 import torch.optim as optim
 from torch import nn
@@ -21,32 +21,31 @@ from torch.utils.data import ConcatDataset
 
 def load_data(dataname):
     if dataname == 'MultimodelZustand' or dataname == 'MultimodelParameter' or dataname == 'MultimodelConcate':
-        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeed'
+        root = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll"
         batchsz = cfg.BATCH_SIZE
         num_trans = cfg.NUM_TRANS
 
         vali_db = Bioreaktor_Detection(root, 64, mode='Vali')
         test_db = Bioreaktor_Detection(root, 64, mode='Test')
-        prozess_db = Bioreaktor_Detection(root, 64, mode='Prozess')
-        vali_loader = DataLoader(vali_db, batch_size=batchsz, num_workers=0)
+        vali_loader = DataLoader(vali_db, batch_size=batchsz, num_workers=0, shuffle=False)
         if dataname == 'MultimodelZustand':
-            test_loader = DataLoader(test_db, batch_size=batchsz, num_workers=0)
-        elif dataname == 'MultimodelParameter':
-            test_loader = DataLoader(prozess_db, batch_size=batchsz, num_workers=0)
-        else:
-            concat_data = ConcatDataset([test_db, prozess_db])
-            test_loader = DataLoader(concat_data, batch_size=batchsz, num_workers=0)
+            test_loader = DataLoader(test_db, batch_size=batchsz, num_workers=0, shuffle=False)
+        # elif dataname == 'MultimodelParameter':
+        #     test_loader = DataLoader(prozess_db, batch_size=batchsz, num_workers=0)
+        # else:
+        #     concat_data = ConcatDataset([test_db, prozess_db])
+        #     test_loader = DataLoader(concat_data, batch_size=batchsz, num_workers=0)
 
         device = torch.device('cuda')
         # viz = visdom.Visdom()
         model = Multimodel(10, num_trans, 6).to(device)
-        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/ModelMultiSpeedres501.mdl'))
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/ModelMultiAllNewRes102.mdl'))
 
         model.eval()
         with torch.no_grad():
             pbar = tqdm(enumerate(vali_loader), total=len(vali_loader))
             for batchidx, (x1, x2, label) in pbar:
-                x1, x2, label = x1.to(device), x2.float().view(-1, 1).to(device), label.to(device)
+                x1, x2, label = x1.to(device), x2.float().view(-1, cfg.INPUT_MULTI).to(device), label.to(device)
 
                 # [b, 72]
                 logits = model(x1, x2)
@@ -64,17 +63,19 @@ def load_data(dataname):
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
             TPFN = torch.eq(total_pred, total_label).float().sum(1)
+
             TPFN_prob = torch.ones_like(TPFN) - TPFN / cfg.NUM_TRANS
 
         model.eval()
         with torch.no_grad():
             pbar = tqdm(enumerate(test_loader), total=len(test_loader))
             for batchidx, (x1, x2, label) in pbar:
-                x1, x2, label = x1.float().to(device), x2.float().view(-1, 1).to(device), label.float().to(device)
+                x1, x2, label = x1.float().to(device), x2.float().view(-1, cfg.INPUT_MULTI).to(device), label.float().to(device)
 
 
                 # [b, 72]
                 logits = model(x1, x2)
+                print(logits)
                 # [b]
                 pred = logits.argmax(dim=1)
 
@@ -89,6 +90,7 @@ def load_data(dataname):
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
             TNFP = torch.eq(total_pred, total_label).float().sum(1)
+
             TNFP_prob = torch.ones_like(TNFP) - TNFP / cfg.NUM_TRANS
 
         TPFNTNFP_prob = torch.cat((TPFN_prob, TNFP_prob), 0)
@@ -276,7 +278,7 @@ def draw_roc(label, prob):
     plt.ylabel('True Positive Rate')
     plt.title("ROC Curve for Multimodel")
     plt.legend(loc="lower right")
-    plt.savefig("ROCConcateSpeed1.png")
+    plt.savefig("ROCMulti.png")
     plt.show()
     plt.close()
     maxindex = (tpr - fpr).tolist().index(max(tpr - fpr))
@@ -284,7 +286,7 @@ def draw_roc(label, prob):
     return best_threshold
 
 # dataname == 'MultimodelZustand' or dataname == 'MultimodelParameter' or dataname == 'MultimodelConcate'
-label, prob = load_data('MultimodelConcate')
+label, prob = load_data('MultimodelZustand')
 print(label, prob)
 threshold = draw_roc(label, prob)
 print(threshold)
@@ -303,6 +305,6 @@ for x in range(2):
 # plt.tight_layout()
 plt.yticks(range(2), ['normal', 'anormal'])
 plt.xticks(range(2), ['normal', 'anormal'], rotation=45)
-plt.savefig("CMMultiConcateSpeed1.png", bbox_inches='tight')
+plt.savefig("CMMulti.png", bbox_inches='tight')
 plt.ioff()
 plt.show()
