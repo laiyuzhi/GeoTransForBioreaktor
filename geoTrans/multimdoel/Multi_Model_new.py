@@ -63,25 +63,59 @@ class ResBlock(nn.Module):
         return out
 
 
+class InputBlock(nn.Module):
+    def __init__(self, input, output):
+        super(InputBlock, self).__init__()
+        self.fc1 = nn.Linear(input, int(output/2))
+        nn.init.kaiming_uniform_(self.fc1.weight)
+        self.bn1 = nn.BatchNorm1d(int(output/2))
+        self.relu1 = nn.LeakyReLU(0.2)
+        # self.fc2 = nn.Linear(int(output/8), int(output/4))
+        # nn.init.kaiming_uniform_(self.fc2.weight)
+        # self.bn2 = nn.BatchNorm1d(int(output/4))
+        # self.relu2 = nn.LeakyReLU(0.2)
+        # self.fc3 = nn.Linear(int(output/4), int(output/2))
+        # nn.init.kaiming_uniform_(self.fc3.weight)
+        # self.bn3 = nn.BatchNorm1d(int(output/2))
+        # self.relu3 = nn.LeakyReLU(0.2)
+        self.fc4 = nn.Linear(int(output/2), output)
+        nn.init.kaiming_uniform_(self.fc4.weight)
+        self.bn4 = nn.BatchNorm1d(int(output))
+        self.relu4 = nn.LeakyReLU(0.2)
+
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.bn1(out)
+        out = self.relu1(out)
+        # out = self.fc2(out)
+        # out = self.relu2(out)
+        # out = self.fc3(out)
+        # out = self.relu3(out)
+        out = self.fc4(out)
+        out = self.bn4(out)
+        out = self.relu4(out)
+
+        return out
+
+
 class MlpBlock(nn.Module):
     def __init__(self, input, output):
         super(MlpBlock, self).__init__()
         self.fc1 = nn.Linear(input, output)
         nn.init.kaiming_uniform_(self.fc1.weight)
-        # self.bn1 = nn.BatchNorm1d(output)
-        self.relu1 = nn.ReLU()
+        self.bn1 = nn.BatchNorm1d(output)
+        self.relu1 = nn.LeakyReLU(0.2)
         self.fc2 = nn.Linear(output, output)
         nn.init.kaiming_uniform_(self.fc2.weight)
-        # self.bn2 = nn.BatchNorm1d(output)
-        self.relu2 = nn.ReLU()
+        self.bn2 = nn.BatchNorm1d(output)
+        self.relu2 = nn.LeakyReLU(0.2)
 
     def forward(self, x):
         out = self.fc1(x)
-        # out = self.bn1(out)
+        out = self.bn1(out)
         out = self.relu1(out)
-
         out = self.fc2(out)
-        # out = self.bn2(out)
+        out = self.bn2(out)
         out = self.relu2(out)
 
         return out
@@ -112,10 +146,10 @@ class Conv_Group(nn.Module):
         return self.layer(x)
 
 class WideResNet(nn.Module):
-    def __init__(self, depth, num_classes, widen_factor, res_factor=5, dropRate=0.0):
+    def __init__(self, depth, num_classes, widen_factor, res_factor=10, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
-        fcnChannels = [3*res_factor, 2*res_factor, 120]
+        fcnChannels = [2*res_factor, 3*res_factor, 16]
         assert ((depth-4)%6 == 0), 'depth should be 6n+4'
         n = (depth - 4) / 6
         self.h = int(cfg.INPUT_H / 2 / 2 / 8)
@@ -136,24 +170,25 @@ class WideResNet(nn.Module):
         self.relu = nn.ReLU()
         self.cnnoutfc = nn.Linear(nChannels[3]*self.h*self.w, fcnChannels[2])
         nn.init.kaiming_uniform_(self.cnnoutfc.weight)
-        # self.cnnoutbn = nn.BatchNorm1d(fcnChannels[0])
-        self.cnnoutrelu = nn.ReLU()
+        # self.cnnoutbn = nn.BatchNorm1d(fcnChannels[2])
+        self.cnnoutrelu = nn.ReLU(0.2)
+        self.pred_out = nn.Linear(fcnChannels[2], cfg.NUM_TRANS)
+        nn.init.kaiming_uniform_(self.pred_out.weight)
         #Branch for fcn
-        self.inputLayer = nn.Linear(cfg.INPUT_MULTI, fcnChannels[0])
-        nn.init.kaiming_uniform_(self.inputLayer.weight)
-        # self.inputbn = nn.BatchNorm1d(fcnChannels[0])
-        self.inputrelu = nn.ReLU()
-        #fcn resblock1
-        # self.fcnblock1 = MlpBlock(fcnChannels[0], fcnChannels[1], 1)
-        self.fcnblock1 = MLP_Group(MLPblock, fcnChannels[0], fcnChannels[1], 1)
+
+        self.inputLayer = InputBlock(cfg.INPUT_MULTI, fcnChannels[2])
         # fcn resblock2
-        self.fcnblock2 = MLP_Group(MLPblock, fcnChannels[2] + fcnChannels[1], fcnChannels[1], 1)
+        self.fcnblock2 = MLP_Group(MLPblock, fcnChannels[2] + fcnChannels[2], fcnChannels[1], 1)
+        self.out_early = nn.Linear(fcnChannels[1], num_classes)
+        nn.init.kaiming_uniform_(self.out_early.weight)
         # fcv resblock3
-        self.fcnblock3 = MLP_Group(MLPblock, fcnChannels[2] + 2 * fcnChannels[1], fcnChannels[1], 1)
+        self.fcnblock3 = MLP_Group(MLPblock, fcnChannels[2] + fcnChannels[1] + fcnChannels[2], fcnChannels[1], 1)
+        # self.fcnblock3 = MLP_Group(MLPblock, fcnChannels[1], fcnChannels[1], 1)
         # outputlayer
         # self.outbn = nn.BatchNorm1d(fcnChannels[1])
         # self.outrelu = nn.ReLU()
         self.outLayer = nn.Linear(fcnChannels[1], num_classes)
+        nn.init.kaiming_uniform_(self.outLayer.weight)
     def forward(self, x1, x2):
         #Branch for Image
         out1 = self.conv1(x1)
@@ -165,29 +200,25 @@ class WideResNet(nn.Module):
         out1 = f.avg_pool2d(out1, 8)
         out1 = out1.view(-1, self.nchannels * self.w * self.h)
         out1 = self.cnnoutfc(out1)
-        # out1 = self.cnnoutbn(out1)
         out1 = self.cnnoutrelu(out1)
+        pred_out = self.pred_out(out1)
 
         #Branch for Prozessparameter
         out2 = self.inputLayer(x2)
-        # out2 = self.inputbn(out2)
-        out2 = self.inputrelu(out2)
-        out2 = self.fcnblock1(out2)
-        # concate 1
+        # concate 1 early
         out3 = torch.cat((out1, out2), dim=1)
         out3 = self.fcnblock2(out3)
-        # concate 2
+        out_early = self.out_early(out3)
+        # concate 2 Late
         out4 = torch.cat((out1, out2, out3), dim=1)
         out4 = self.fcnblock3(out4)
-        # out4 = self.outbn(out4)
-        # out4 = self.outrelu(out4)
         out4 = self.outLayer(out4)
 
-        return out4
+        return out4, pred_out, out_early
 
 # device = torch.device('cuda')
 # criterion = nn.CrossEntropyLoss()
-#     # viz = visdom.Visdom()
+# viz = visdom.Visdom()
 
 # model = WideResNet(16, cfg.NUM_TRANS, 8)
 # print(model)
@@ -195,5 +226,5 @@ class WideResNet(nn.Module):
 # x2 = torch.randn(64, 2)
 # print(x2.size())
 
-# logits = model(x1, x2)
+# logits, _, _ = model(x1, x2)
 # print(logits.size())

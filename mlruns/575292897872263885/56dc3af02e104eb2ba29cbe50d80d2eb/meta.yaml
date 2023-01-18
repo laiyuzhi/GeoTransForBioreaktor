@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/56dc3af02e104eb2ba29cbe50d80d2eb/artifacts
+end_time: 1674072581859
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 56dc3af02e104eb2ba29cbe50d80d2eb
+run_name: youthful-whale-231
+run_uuid: 56dc3af02e104eb2ba29cbe50d80d2eb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581847
+status: 3
+tags: []
+user_id: lai

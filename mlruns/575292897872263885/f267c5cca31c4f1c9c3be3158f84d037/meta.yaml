@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/f267c5cca31c4f1c9c3be3158f84d037/artifacts
+end_time: 1674081387038
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: f267c5cca31c4f1c9c3be3158f84d037
+run_name: persistent-bear-89
+run_uuid: f267c5cca31c4f1c9c3be3158f84d037
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081387027
+status: 3
+tags: []
+user_id: lai

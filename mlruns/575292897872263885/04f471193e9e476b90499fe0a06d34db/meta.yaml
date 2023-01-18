@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/04f471193e9e476b90499fe0a06d34db/artifacts
+end_time: 1674081386969
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 04f471193e9e476b90499fe0a06d34db
+run_name: dazzling-fawn-160
+run_uuid: 04f471193e9e476b90499fe0a06d34db
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386958
+status: 3
+tags: []
+user_id: lai

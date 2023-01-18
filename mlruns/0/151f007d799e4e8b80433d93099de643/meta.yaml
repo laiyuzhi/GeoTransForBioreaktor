@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/151f007d799e4e8b80433d93099de643/artifacts
+end_time: 1674072190850
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 151f007d799e4e8b80433d93099de643
+run_name: bedecked-toad-494
+run_uuid: 151f007d799e4e8b80433d93099de643
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190841
+status: 3
+tags: []
+user_id: lai

@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/25669736688f4129b6e693e102d8f743/artifacts
+end_time: 1674072001065
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 25669736688f4129b6e693e102d8f743
+run_name: welcoming-hound-856
+run_uuid: 25669736688f4129b6e693e102d8f743
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072001055
+status: 3
+tags: []
+user_id: lai

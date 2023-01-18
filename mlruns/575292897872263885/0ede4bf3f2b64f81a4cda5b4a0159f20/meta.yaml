@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/0ede4bf3f2b64f81a4cda5b4a0159f20/artifacts
+end_time: 1674072581887
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 0ede4bf3f2b64f81a4cda5b4a0159f20
+run_name: bold-moth-945
+run_uuid: 0ede4bf3f2b64f81a4cda5b4a0159f20
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581876
+status: 3
+tags: []
+user_id: lai

@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/4d569a5c45f540bd9f503c730ea6e45e/artifacts
+end_time: 1674081386900
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 4d569a5c45f540bd9f503c730ea6e45e
+run_name: silent-robin-541
+run_uuid: 4d569a5c45f540bd9f503c730ea6e45e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386888
+status: 3
+tags: []
+user_id: lai

@@ -144,7 +144,7 @@ def preprocess():
     print(i)
 
 def MakeDataSet():
-    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll/Vali'
+    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll/DataDistanz200/Vali'
     for json_name in os.listdir(root):
         if json_name.endswith('.json'):
             png_name = (json_name.split('.json')[0] + '_camera_frame' ".png")
@@ -152,8 +152,8 @@ def MakeDataSet():
             json_root = os.path.join(root, json_name)
             with open(os.path.join(json_root), 'r') as f2:
                 temp = json.load(f2)
-                multi_input = [temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"], temp["gas_flow_rate"]["data"]["opcua_value"]["value"]]
-                if 250 < multi_input[0] < 750.0 and 25.0 < multi_input[1] < 75.0:
+                multi_input = [int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"]),int(round(temp["gas_flow_rate"]["data"]["opcua_value"]["value"]/10)*10)]
+                if multi_input[0]%400==0 and multi_input[1]%40==0:
                     save_path = os.path.join(root, 'Vali')
                     if not os.path.exists(save_path):
                         os.makedirs(save_path)
@@ -189,4 +189,4 @@ def MakeDataSet():
     #     print(i)
 
 if __name__ =='__main__':
-    preprocess()
+    MakeDataSet()

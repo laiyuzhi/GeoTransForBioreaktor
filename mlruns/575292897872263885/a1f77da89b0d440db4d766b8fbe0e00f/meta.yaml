@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/a1f77da89b0d440db4d766b8fbe0e00f/artifacts
+end_time: 1674081387010
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: a1f77da89b0d440db4d766b8fbe0e00f
+run_name: abundant-yak-890
+run_uuid: a1f77da89b0d440db4d766b8fbe0e00f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386999
+status: 3
+tags: []
+user_id: lai

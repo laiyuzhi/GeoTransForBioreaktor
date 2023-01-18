@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/e39c35a072e844c59f825fc3c72bc16c/artifacts
+end_time: 1674072190886
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e39c35a072e844c59f825fc3c72bc16c
+run_name: serious-hog-413
+run_uuid: e39c35a072e844c59f825fc3c72bc16c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190877
+status: 3
+tags: []
+user_id: lai

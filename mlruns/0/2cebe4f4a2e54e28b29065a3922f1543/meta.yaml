@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/2cebe4f4a2e54e28b29065a3922f1543/artifacts
+end_time: 1674072190789
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2cebe4f4a2e54e28b29065a3922f1543
+run_name: adorable-mink-354
+run_uuid: 2cebe4f4a2e54e28b29065a3922f1543
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190765
+status: 3
+tags: []
+user_id: lai

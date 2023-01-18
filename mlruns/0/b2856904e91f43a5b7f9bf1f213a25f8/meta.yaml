@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/b2856904e91f43a5b7f9bf1f213a25f8/artifacts
+end_time: 1674072000967
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b2856904e91f43a5b7f9bf1f213a25f8
+run_name: tasteful-deer-156
+run_uuid: b2856904e91f43a5b7f9bf1f213a25f8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072000957
+status: 3
+tags: []
+user_id: lai

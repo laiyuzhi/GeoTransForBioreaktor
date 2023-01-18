@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/3029d3bd444040b080b81b2b29d997f6/artifacts
+end_time: 1674072581845
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 3029d3bd444040b080b81b2b29d997f6
+run_name: unleashed-mouse-31
+run_uuid: 3029d3bd444040b080b81b2b29d997f6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581832
+status: 3
+tags: []
+user_id: lai

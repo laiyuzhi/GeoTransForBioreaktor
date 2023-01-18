@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/e68d9ebaac734e5eadaa23e07a4b0987/artifacts
+end_time: 1674072190826
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e68d9ebaac734e5eadaa23e07a4b0987
+run_name: glamorous-tern-140
+run_uuid: e68d9ebaac734e5eadaa23e07a4b0987
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190817
+status: 3
+tags: []
+user_id: lai

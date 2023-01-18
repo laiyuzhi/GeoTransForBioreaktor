@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/daadd8dfb7024bb6a060ac151517332b/artifacts
+end_time: 1674072581803
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: daadd8dfb7024bb6a060ac151517332b
+run_name: skillful-frog-607
+run_uuid: daadd8dfb7024bb6a060ac151517332b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581792
+status: 3
+tags: []
+user_id: lai

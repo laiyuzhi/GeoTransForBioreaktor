@@ -67,11 +67,11 @@ class MlpBlock(nn.Module):
     def __init__(self, input, output):
         super(MlpBlock, self).__init__()
         self.bn1 = nn.BatchNorm1d(input)
-        self.relu1 = nn.ReLU()
+        self.relu1 = nn.LeakyReLU()
         self.fc1 = nn.Linear(input, output)
         nn.init.kaiming_uniform_(self.fc1.weight)
         self.bn2 = nn.BatchNorm1d(output)
-        self.relu2 = nn.ReLU()
+        self.relu2 = nn.LeakyReLU()
         self.fc2 = nn.Linear(output, output)
         nn.init.kaiming_uniform_(self.fc2.weight)
 
@@ -100,7 +100,7 @@ class Conv_Group(nn.Module):
         return self.layer(x)
 
 class WideResNet(nn.Module):
-    def __init__(self, depth, num_classes, widen_factor, res_factor=10, dropRate=0.0):
+    def __init__(self, depth, num_classes, widen_factor, res_factor=5, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
         fcnChannels = [3*res_factor, 2*res_factor]
@@ -134,7 +134,7 @@ class WideResNet(nn.Module):
         self.fcnblock3 = MlpBlock(fcnChannels[0] + 2 * fcnChannels[1], fcnChannels[1])
         # outputlayer
         self.outbn = nn.BatchNorm1d(fcnChannels[1])
-        self.outrelu = nn.ReLU()
+        self.outrelu = nn.LeakyReLU(0.2)
         self.outLayer = nn.Linear(fcnChannels[1], num_classes)
     def forward(self, x1, x2):
         #Branch for Image

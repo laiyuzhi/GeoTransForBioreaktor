@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/c92cccab2d7243b99d02833c3e651222/artifacts
+end_time: 1674072190802
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c92cccab2d7243b99d02833c3e651222
+run_name: skillful-moose-627
+run_uuid: c92cccab2d7243b99d02833c3e651222
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190792
+status: 3
+tags: []
+user_id: lai

@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/5e67b4de68754d96ac2fd7e587c7671a/artifacts
+end_time: 1674072001003
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5e67b4de68754d96ac2fd7e587c7671a
+run_name: mercurial-trout-364
+run_uuid: 5e67b4de68754d96ac2fd7e587c7671a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072000994
+status: 3
+tags: []
+user_id: lai

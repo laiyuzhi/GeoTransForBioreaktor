@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/0/161e93414dce48b8a5e448bb9015a293/artifacts
+end_time: 1674072190959
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 161e93414dce48b8a5e448bb9015a293
+run_name: secretive-whale-459
+run_uuid: 161e93414dce48b8a5e448bb9015a293
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072190950
+status: 3
+tags: []
+user_id: lai

@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/afea2e460fef4ee1a49a6cfbce28155f/artifacts
+end_time: 1674072581873
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: afea2e460fef4ee1a49a6cfbce28155f
+run_name: bald-croc-173
+run_uuid: afea2e460fef4ee1a49a6cfbce28155f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581861
+status: 3
+tags: []
+user_id: lai

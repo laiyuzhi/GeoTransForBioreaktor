@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/a273384ef8b6411ebd7b2506c184a2f9/artifacts
+end_time: 1674072581914
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: a273384ef8b6411ebd7b2506c184a2f9
+run_name: melodic-fox-696
+run_uuid: a273384ef8b6411ebd7b2506c184a2f9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674072581903
+status: 3
+tags: []
+user_id: lai

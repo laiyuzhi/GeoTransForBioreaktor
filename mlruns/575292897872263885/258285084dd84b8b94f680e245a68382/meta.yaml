@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/258285084dd84b8b94f680e245a68382/artifacts
+end_time: 1674081386914
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 258285084dd84b8b94f680e245a68382
+run_name: bemused-snail-324
+run_uuid: 258285084dd84b8b94f680e245a68382
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386902
+status: 3
+tags: []
+user_id: lai

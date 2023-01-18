@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/e06b15b5a36a479a88f983b2faef730e/artifacts
+end_time: 1674081386885
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: e06b15b5a36a479a88f983b2faef730e
+run_name: bustling-trout-134
+run_uuid: e06b15b5a36a479a88f983b2faef730e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386875
+status: 3
+tags: []
+user_id: lai

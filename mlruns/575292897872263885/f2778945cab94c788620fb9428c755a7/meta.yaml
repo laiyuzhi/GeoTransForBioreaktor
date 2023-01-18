@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/f2778945cab94c788620fb9428c755a7/artifacts
+end_time: 1674081386942
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: f2778945cab94c788620fb9428c755a7
+run_name: intrigued-mouse-738
+run_uuid: f2778945cab94c788620fb9428c755a7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386930
+status: 3
+tags: []
+user_id: lai

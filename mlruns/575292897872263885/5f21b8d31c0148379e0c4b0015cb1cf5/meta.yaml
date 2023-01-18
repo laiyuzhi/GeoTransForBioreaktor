@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/575292897872263885/5f21b8d31c0148379e0c4b0015cb1cf5/artifacts
+end_time: 1674081386997
+entry_point_name: ''
+experiment_id: '575292897872263885'
+lifecycle_stage: active
+run_id: 5f21b8d31c0148379e0c4b0015cb1cf5
+run_name: rogue-foal-924
+run_uuid: 5f21b8d31c0148379e0c4b0015cb1cf5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1674081386985
+status: 3
+tags: []
+user_id: lai
